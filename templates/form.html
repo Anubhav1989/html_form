@@ -1,17 +1,262 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Covid Prediction Form</title>
+    <title>COVID Prediction Workflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0f1e;
+            --surface: #111827;
+            --surface2: #1a2235;
+            --border: rgba(255,255,255,0.07);
+            --accent: #00d4aa;
+            --accent2: #3b82f6;
+            --text: #f0f4ff;
+            --muted: #8a9bb5;
+            --danger: #ff6b6b;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,212,170,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 90%, rgba(59,130,246,0.07) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+            animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,212,170,0.1);
+            border: 1px solid rgba(0,212,170,0.25);
+            color: var(--accent);
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 28px;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 380px;
+            margin: 0 auto 40px;
+        }
+
+        .steps-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .step-item .dot {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: rgba(0,212,170,0.15);
+            border: 1px solid rgba(0,212,170,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .step-arrow {
+            color: var(--border);
+            font-size: 14px;
+            padding: 0 4px;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            background: linear-gradient(135deg, var(--accent), #00b894);
+            color: #0a0f1e;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+            box-shadow: 0 0 0 0 rgba(0,212,170,0.4), 0 8px 32px rgba(0,212,170,0.2);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 0 4px rgba(0,212,170,0.15), 0 16px 40px rgba(0,212,170,0.3);
+        }
+
+        .cta-btn svg { transition: transform 0.2s; }
+        .cta-btn:hover svg { transform: translateX(4px); }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-val {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 2px;
+        }
+
+        .divider {
+            width: 1px;
+            height: 36px;
+            background: var(--border);
+            align-self: center;
+        }
+    </style>
 </head>
 <body>
-    <h2>Covid Prediction Form</h2>
-    <form action="/submit_form" method="post">
-        Gender: <input type="text" name="gender"><br><br>
-        Cough: <input type="text" name="cough"><br><br>
-        City: <input type="text" name="city"><br><br>
-        Age: <input type="text" name="age"><br><br>
-        Fever: <input type="text" name="fever"><br><br>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="grid-overlay"></div>
+    <div class="container">
+        <div class="badge">AI-Powered Diagnostics</div>
+        <h1>COVID-19<br><span>Prediction System</span></h1>
+        <p class="subtitle">A guided, multi-step clinical workflow for accurate COVID-19 risk assessment using machine learning.</p>
+
+        <div class="steps-row">
+            <div class="step-item"><span class="dot">1</span> Patient Info</div>
+            <span class="step-arrow">›</span>
+            <div class="step-item"><span class="dot">2</span> Symptoms</div>
+            <span class="step-arrow">›</span>
+            <div class="step-item"><span class="dot">3</span> Medical History</div>
+            <span class="step-arrow">›</span>
+            <div class="step-item"><span class="dot">4</span> Prediction</div>
+        </div>
+
+        <a href="/patient_form" class="cta-btn">
+            Begin Assessment
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+
+        <div class="stats-row">
+            <div class="stat">
+                <div class="stat-val">4</div>
+                <div class="stat-label">Steps</div>
+            </div>
+            <div class="divider"></div>
+            <div class="stat">
+                <div class="stat-val">~2 min</div>
+                <div class="stat-label">Duration</div>
+            </div>
+            <div class="divider"></div>
+            <div class="stat">
+                <div class="stat-val">ML</div>
+                <div class="stat-label">Powered</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

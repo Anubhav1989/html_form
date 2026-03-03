@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Patient Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0f1e;
+            --surface: #111827;
+            --surface2: #1a2235;
+            --border: rgba(255,255,255,0.07);
+            --border-focus: rgba(0,212,170,0.4);
+            --accent: #00d4aa;
+            --accent2: #3b82f6;
+            --text: #f0f4ff;
+            --muted: #8a9bb5;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 10% 20%, rgba(0,212,170,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 70% at 90% 80%, rgba(59,130,246,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .card {
+            position: relative;
+            z-index: 10;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+            width: 100%;
+            max-width: 440px;
+            animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress bar */
+        .progress-wrap {
+            margin-bottom: 28px;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-label {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        .progress-label.active { color: var(--accent); }
+
+        .progress-track {
+            height: 3px;
+            background: var(--border);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 25%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 100px;
+            transition: width 0.5s ease;
+        }
+
+        .step-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0,212,170,0.1);
+            border: 1px solid rgba(0,212,170,0.2);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 100px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+
+        .desc {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 300;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 7px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        input::placeholder { color: #3a4a65; }
+
+        input:focus, select:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0,212,170,0.08);
+        }
+
+        .select-wrap {
+            position: relative;
+        }
+
+        .select-wrap::after {
+            content: '';
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0; height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid var(--muted);
+            pointer-events: none;
+        }
+
+        select option { background: #1a2235; }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--accent), #00b894);
+            color: #0a0f1e;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.03em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+            box-shadow: 0 4px 20px rgba(0,212,170,0.2);
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(0,212,170,0.3);
+        }
+
+        button[type="submit"] svg { transition: transform 0.2s; }
+        button[type="submit"]:hover svg { transform: translateX(3px); }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <div class="card">
+        <div class="progress-wrap">
+            <div class="progress-labels">
+                <span class="progress-label active">Patient</span>
+                <span class="progress-label">Symptoms</span>
+                <span class="progress-label">History</span>
+                <span class="progress-label">Predict</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
+
+        <div class="step-tag">Step 1 of 4</div>
+        <h2>Patient Registration</h2>
+        <p class="desc">Enter the patient's basic demographic information to begin the assessment.</p>
+
+        <form action="/submit_patient" method="post">
+            <div class="field">
+                <label>Full Name</label>
+                <input type="text" name="name" placeholder="e.g. John Smith" required>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label>Age</label>
+                    <input type="number" name="age" placeholder="Years" required min="0" max="120">
+                </div>
+                <div class="field">
+                    <label>Gender</label>
+                    <div class="select-wrap">
+                        <select name="gender">
+                            <option value="0">Female</option>
+                            <option value="1">Male</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>City</label>
+                <input type="text" name="city" placeholder="e.g. New York" required>
+            </div>
+
+            <button type="submit">
+                Next: Symptoms
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </form>
+    </div>
+</body>
+</html>
